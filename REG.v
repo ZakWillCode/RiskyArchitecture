@@ -6,15 +6,14 @@ module register
 	input 	reg       	[1:0] 	ra,
 	input	reg			[1:0]	rb,
 	input	reg			[1:0]	wb,
-	input 		signed  [7:0]   data, 
+	input 	signed  	[7:0]   data, 
 	input 			    	    reg_en,
         
-	output  reg signed 	[7:0]	reg_data1,
-        
-	output  reg signed	[7:0]	reg_data2 
+	output 	signed 		[7:0]	reg_data1,
+	output 	signed		[7:0]	reg_data2 
  );  
 
-	reg	signed  [7:0]	reg_array [3:0] = 8'b0;	//setup the registers
+	reg	signed  [7:0]	reg_array [3:0];	//setup the registers
 	
 	always @ (negedge clk) begin 	//Write on neg edge clock to keep everything in one clock cycle
 		

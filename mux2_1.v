@@ -4,6 +4,6 @@ module mux2_1 (
     output [7:0] Y
 );
 
-    assign Y = sel ? A : B;
+    assign Y = !sel ? A : B;
 
 endmodule

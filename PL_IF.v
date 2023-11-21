@@ -6,9 +6,9 @@ module pipeline_IF (
 
     output  reg     [7:0]   PC2_out = 8'b0,
 
-    output  reg     [1:0]   ra = 2'b0, rb = 2'b0
+    output  reg     [1:0]   ra = 2'b0, rb = 2'b0,
     output  reg     [7:0]   ea = 8'b0,
-    output  reg     [15:0]  inst_out = 16'b0,
+    output  reg     [15:0]  inst_out = 16'b0
 
 );
 
@@ -18,7 +18,7 @@ module pipeline_IF (
             ra <=       2'b00;
             rb <=       2'b00;
             ea <=       8'b00000000;
-            inst_out <= 2'h00;
+            inst_out <= 16'b0000000000000000;
         end
         else begin
             PC2_out <= PC2_in;

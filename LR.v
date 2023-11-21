@@ -5,7 +5,7 @@ module link_reg (
     input   en,
     input           [7:0]   PC2,
 
-    output  reg     [7:0]   LR     =   8'b0;
+    output  reg     [7:0]   LR     =   8'b0
 );
 
     always @(negedge clk) begin

@@ -1,19 +1,19 @@
 module controller_CPU(
     input   [15:0]  inst,
      
-    output          id_out_en,      //Instruction Decoding Stage
+    output  reg        		id_out_en,      //Instruction Decoding Stage
 
-    output          ex_lr_en,       //Instruction Execution Stage
-    output          ex_brx,
-    output  [3:0]   ex_alu_sel,
-    output  [1:0]   ex_br_sel,        //if BR LR
-
-    output          mem_wr_en,      //Memory Stage 
-    output          mem_imm_sel,
-
-    output          wb_wb_sel,      //Write Back Stage
-    output          wb_data_sel,
-    output          wb_reg_en
+    output 	reg 	        ex_lr_en,       //Instruction Execution Stage
+    output 	reg 	        ex_brx,
+    output 	reg 	[3:0]   ex_alu_sel,
+    output 	reg 	[1:0]   ex_br_sel,        //if BR LR
+			
+    output 	reg 	        mem_wr_en,      //Memory Stage 
+    output 	reg 	        mem_imm_sel,
+			
+    output 	reg 	        wb_wb_sel,      //Write Back Stage
+    output 	reg 	        wb_data_sel,
+    output 	reg 	        wb_reg_en
 
 );
 

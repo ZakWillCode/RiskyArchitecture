@@ -32,9 +32,9 @@ module pipeline_MEM (
       wb_reg_en_out <= 1'b0;
     end else begin
       // Assign inputs to outputs on positive clock edge
-      ALU_ea_out <= ALU;
+      ALU_ea_out <= ALU_ea;
       ra_out <= ra;
-      DM_out <= ea;
+      DM_out <= DM;
       wb_wb_sel_out <= wb_wb_sel;
       wb_data_sel_out <= wb_data_sel;
       wb_reg_en_out <= wb_reg_en;

@@ -3,7 +3,7 @@ module PL_RISC_TL (
     input   [7:0]   in_port,
 
     output  [7:0]   out_port
-)
+);
     //PC
     wire [7:0] pc_in, pc_out;
     wire [15:0] inst;
@@ -16,10 +16,9 @@ module PL_RISC_TL (
     wire [15:0]  inst_IF;
 
     //REG
-    wire [7:0] reg_data1, reg_data2;
+    wire [7:0] reg_data1, reg_data2, data;
 
     //ID
-    wire    [7:0]   ea;  
     wire            ex_lr_en;       //Instruction Execution Stage
     wire            ex_brx;
     wire    [3:0]   ex_alu_sel;
@@ -48,12 +47,11 @@ module PL_RISC_TL (
     wire    [7:0]   A_dh_out, B_dh_out;
 
     //ALU
-    wire    [7:0]   flag;
+	wire	[7:0]	ALU_out;
+    wire    [1:0]   flag;
 
-    //Branch
-    wire            brx; //brx 
+    //Branch 
     wire            _Z, _N;
-    wire    [3:0]   ex_alu_sel;
     wire    [1:0]   ex_br_sel;
     wire            br_en;
     wire            br_taken;
@@ -77,33 +75,56 @@ module PL_RISC_TL (
     wire            wb_wb_sel_MEM;
     wire            wb_data_sel_MEM;
     wire            wb_reg_en_MEM;
+	wire 	[7:0]	wb_data;
 
     //DM
     wire    [7:0]   DM;
-
-    PC PC (
+	
+	//HZ  
+	wire 	        br_clr;
+	wire 	[1:0]   A_dh_sel;
+    wire 	[1:0]   B_dh_sel;
+	
+	//pc feedback controls 
+	wire 	[7:0]	pc_type;
+	
+	mux2_1 br_type (
+	.A(ea_ID),
+	.B(LR),
+	.Y(pc_type),
+	.sel(br_type_sel)
+	);
+	
+	mux2_1 br_ (
+	.A(PC2),
+	.B(pc_type),
+	.Y(pc_in),
+	.sel(br_sel)
+	);
+	
+    PC pc (
         .clk(clk),
         .rst(rst),
         .pc_in(pc_in),
         .pc_out(pc_out)
     );
 
-    inst_mem IM (
+    inst_mem im (
         .pc(pc_out),
         .inst(inst)
     );
 
-    PC2 PC2 (
+    PC2 pc2 (
         .PC(pc_out),
         .PC2(PC2)
     );
 
-    pipeline_IF PL_IF (
+    pipeline_IF pl_if (
         .clk(clk),
-        .rst(rst),
+        .rst(br_clr),
         .PC2_in(PC2),
         .PC2_out(PC2IF),
-        .inst_in(inst)
+        .inst_in(inst),
         .ra(ra),
         .rb(rb),
         .ea(ea),
@@ -113,17 +134,18 @@ module PL_RISC_TL (
     mux2_1 reg_write (
         .A(wb_data),
         .B(in_port),
-        .sel(wb_data_sel),
+        .sel(wb_data_sel_MEM),
         .Y(data)
     );
 
-    register REG (
+    register register (
         .clk(clk),
-        .rst(rst),
+        .rst(br_clr),
         .ra(ra),
         .rb(rb),
-        .wb(ra_out),
+        .wb(ra_MEM),
         .data(data),
+		.reg_en(wb_reg_en_MEM),
         .reg_data1(reg_data1),
         .reg_data2(reg_data2)
     );
@@ -136,7 +158,7 @@ module PL_RISC_TL (
         .out_port(out_port)
     );
 
-    controller_CPU controller_CPU (
+    controller_CPU controller_cpu (
         .inst(inst_IF),
         .id_out_en(id_out_en),
         .ex_lr_en(ex_lr_en),
@@ -150,7 +172,9 @@ module PL_RISC_TL (
         .wb_reg_en(wb_reg_en)
     );
 
-    pipeline_ID PL_ID (
+    pipeline_ID pl_id (
+		.clk(clk),
+		.rst(rst),
         .A(reg_data1),
         .B(reg_data2),
         .PC2(PC2), 
@@ -181,7 +205,7 @@ module PL_RISC_TL (
         .wb_reg_en_out(wb_reg_en_ID)
     );
 
-    LR LR (
+    link_reg lr (
         .clk(clk),
         .rst(rst),
         .en(ex_lr_en_ID),
@@ -189,7 +213,7 @@ module PL_RISC_TL (
         .LR(LR)
     );
 
-    mux4_1 A_dh (
+    mux4_1 a_dh (
         .A(A_ID),
         .B(wb_data),
         .C(ALU_EX),
@@ -198,7 +222,7 @@ module PL_RISC_TL (
         .Y(A_dh_out)
     );
 
-    mux4_1 B_dh (
+    mux4_1 b_dh (
         .A(B_ID),
         .B(wb_data),
         .C(ALU_EX),
@@ -207,7 +231,7 @@ module PL_RISC_TL (
         .Y(B_dh_out)
     );
 
-    ALU ALU (
+    ALU alu (
         .A(A_ID),
         .B(B_ID),
         .Y(ALU_out),
@@ -215,8 +239,8 @@ module PL_RISC_TL (
         .flag(flag)
     );
 
-    controller_branch CB (
-        .brx(ex_brx), //brx 
+    controller_branch controller_b (
+        .brx(ex_brx_ID), //brx 
         ._Z(_Z), 
         ._N(_N),
         .ex_alu_sel(ex_alu_sel_ID),
@@ -227,7 +251,7 @@ module PL_RISC_TL (
         .br_type_sel(br_type_sel)
     );
 
-    flag_reg FR (
+    flag_reg freg (
         .clk(clk),
         .rst(rst),
         .en(br_en),
@@ -236,7 +260,9 @@ module PL_RISC_TL (
         ._N(_N)
     );
 
-    pipeline_EX PL_EX(
+    pipeline_EX pl_ex(
+		.clk(clk),
+		.rst(rst),
         .ALU(ALU_out),
         .ra(ra_ID),
         .ea(ea_ID),
@@ -251,11 +277,11 @@ module PL_RISC_TL (
         .mem_wr_en_out(mem_wr_en_EX),  
         .mem_imm_sel_out(mem_imm_sel_EX),
         .wb_wb_sel_out(wb_wb_sel_EX),  
-        .wb_data_sel_out(wb_data_sel_out),
+        .wb_data_sel_out(wb_data_sel_EX),
         .wb_reg_en_out(wb_reg_en_EX)
     );
 
-    DM DM (
+    data_mem dm (
         .clk(clk),
         .rst(rst),
         .result(ALU_EX),
@@ -271,19 +297,19 @@ module PL_RISC_TL (
         .sel(mem_imm_sel_EX)
     );
 
-    pipeline_MEM PL_MEM (
+    pipeline_MEM pl_mem (
         .DM(DM),
         .ALU_ea(ALU_ea),
         .ra(ra_EX),
-        .wb_wb_sel(wb_data_sel_EX),
+        .wb_wb_sel(wb_wb_sel_EX),
         .wb_data_sel(wb_data_sel_EX),
         .wb_reg_en(wb_reg_en_EX),
         .DM_out(DM_MEM),
         .ra_out(ra_MEM),
         .ALU_ea_out(ALU_ea_MEM),
         .wb_wb_sel_out(wb_wb_sel_MEM),
-        .wb_data_sel(wb_data_sel_MEM),
-        .wb_reg_en_out(wb_reg_en_MEM),
+        .wb_data_sel_out(wb_data_sel_MEM),
+        .wb_reg_en_out(wb_reg_en_MEM)
     );
 
     mux2_1 mux_wb (
@@ -292,5 +318,17 @@ module PL_RISC_TL (
         .Y(wb_data),
         .sel(wb_data_sel_MEM)
     );
+	
+	controller_hazard hz_c (
+		.rst(rst),
+		.ra(ra),
+		.rb(rb),
+		.ra_EX(ra_EX),
+		.ra_MEM(ra_MEM),
+		.br_taken(br_taken),
+		.br_clr(br_clr),
+		.A_dh_sel(A_dh_sel),
+		.B_dh_sel(B_dh_sel)
+	);
 
 endmodule 

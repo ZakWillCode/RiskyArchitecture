@@ -3,14 +3,14 @@
 	input 		            clk,
 	input 		            rst,
 
-	input  signed   [7:0]	result,  	// write ports
-    input           [7:0]   ea,
-	input			        mem_en,  
+	input	[7:0]	result,  	// write ports
+    input   [7:0]   ea,
+	input	        mem_en,  
 
-	output signed   [7:0]	data  		// read port
+	output  [7:0]	data  		// read port
  );  
 
-	reg    signed   [7:0]   ram     [255:0]; 
+	reg   [7:0]   ram     [255:0]; 
 	integer i;
 
 	always @(negedge clk) begin 
