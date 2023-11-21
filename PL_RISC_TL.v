@@ -286,6 +286,11 @@ module PL_RISC_TL (
         .wb_reg_en_out(wb_reg_en_MEM),
     );
 
-    mux2_1 
+    mux2_1 mux_wb (
+        .A(ALU_ea_MEM),
+        .B(DM_MEM),
+        .Y(wb_data),
+        .sel(wb_data_sel_MEM)
+    );
 
 endmodule 
