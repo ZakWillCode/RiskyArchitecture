@@ -11,6 +11,7 @@ module pipeline_ID (
     input           ex_lr_en,       //Instruction Execution Stage
     input           ex_brx,
     input   [3:0]   ex_alu_sel,
+    input   [1:0]   ex_br_sel,
 
     input           mem_wr_en,      //Memory Stage 
     input           mem_imm_sel,
@@ -29,6 +30,7 @@ module pipeline_ID (
     output  reg             ex_lr_en_out = 1'b0,       //Instruction Execution Stage Out
     output  reg             ex_brx_out = 1'b0,
     output  reg     [3:0]   ex_alu_sel_out = 4'b0,
+    output  reg     [1:0]   ex_br_sel_out = 2'b0,
 
     output  reg             mem_wr_en_out = 1'b0,      //Memory Stage Out
     output  reg             mem_imm_sel_out = 1'b0,
@@ -50,6 +52,7 @@ module pipeline_ID (
       ex_lr_en_out <= 1'b0;
       ex_brx_out <= 1'b0;
       ex_alu_sel_out <= 4'b0;
+      ex_br_sel_out <= 2'b0;
       mem_wr_en_out <= 1'b0;
       mem_imm_sel_out <= 1'b0;
       wb_wb_sel_out <= 1'b0;
@@ -65,6 +68,7 @@ module pipeline_ID (
       ex_lr_en_out <= ex_lr_en;
       ex_brx_out <= ex_brx;
       ex_alu_sel_out <= ex_alu_sel;
+      ex_br_sel_out <= ex_br_sel;
       mem_wr_en_out <= mem_wr_en;
       mem_imm_sel_out <= mem_imm_sel;
       wb_wb_sel_out <= wb_wb_sel;

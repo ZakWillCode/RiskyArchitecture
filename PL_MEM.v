@@ -1,4 +1,4 @@
-module pipeline_EX (
+module pipeline_MEM (
     input clk, rst, 
 
     input   [7:0]   DM,
