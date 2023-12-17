@@ -1,5 +1,5 @@
 module pipeline_IF (
-    input clk, rst, 
+    input clk, rst, IF_en, 
 
     input [7:0]  PC2_in,
     input [15:0] inst_in,
@@ -19,9 +19,8 @@ module pipeline_IF (
             rb <=       2'b00;
             ea <=       8'b00000000;
             inst_out <= 16'b0000000000000000;
-        end
-        else begin
-            PC2_out <= PC2_in;
+        end else if (IF_en) begin
+	    PC2_out <= PC2_in;
             inst_out <= inst_in;
 
             ra <= inst_in[11:10];

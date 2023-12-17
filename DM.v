@@ -10,7 +10,7 @@
 	output  [7:0]	data  		// read port
  );  
 
-	reg   [7:0]   ram     [255:0]; 
+	reg   [7:0]   ram     [0:255]; 
 	integer i;
 
 	always @(negedge clk) begin 

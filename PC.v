@@ -1,6 +1,7 @@
 module PC (
 	
 	input clk, rst,
+	input pc_en,
 	input [7:0] pc_in,
 
 	output reg [7:0] pc_out = 8'b0
@@ -10,7 +11,7 @@ module PC (
 		if (rst) begin
 			pc_out <= 8'b0;
 		end 
-		else begin
+		else if (pc_en) begin
 			pc_out <= pc_in;
 		end
 	end

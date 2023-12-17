@@ -10,7 +10,6 @@ module pipeline_EX (
     input           mem_imm_sel,
 
     input           wb_wb_sel,      //Write Back Stage
-    input           wb_data_sel,
     input           wb_reg_en,
 
     output  reg     [7:0]   ALU_out = 8'b0,
@@ -22,7 +21,6 @@ module pipeline_EX (
     output  reg             mem_imm_sel_out = 1'b0,
 
     output  reg             wb_wb_sel_out = 1'b0,      //Write Back Stage Out
-    output  reg             wb_data_sel_out = 1'b0,
     output  reg             wb_reg_en_out = 1'b0
 
 );
@@ -36,7 +34,6 @@ module pipeline_EX (
       mem_wr_en_out <= 1'b0;
       mem_imm_sel_out <= 1'b0;
       wb_wb_sel_out <= 1'b0;
-      wb_data_sel_out <= 1'b0;
       wb_reg_en_out <= 1'b0;
     end else begin
       // Assign inputs to outputs on positive clock edge
@@ -46,7 +43,6 @@ module pipeline_EX (
       mem_wr_en_out <= mem_wr_en;
       mem_imm_sel_out <= mem_imm_sel;
       wb_wb_sel_out <= wb_wb_sel;
-      wb_data_sel_out <= wb_data_sel;
       wb_reg_en_out <= wb_reg_en;
     end
   end

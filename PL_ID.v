@@ -1,11 +1,12 @@
 module pipeline_ID (
-    input clk, rst, 
+    input clk, rst, ID_stall,
 
     input   [7:0]   A, B,
 
     input   [7:0]   PC2,  
 
     input   [1:0]   ra,
+    input   [1:0]   rb,
     input   [7:0]   ea,  
 
     input           ex_lr_en,       //Instruction Execution Stage
@@ -15,9 +16,9 @@ module pipeline_ID (
 
     input           mem_wr_en,      //Memory Stage 
     input           mem_imm_sel,
+    input 	    mem_read,
 
     input           wb_wb_sel,      //Write Back Stage
-    input           wb_data_sel,
     input           wb_reg_en,
 
     output  reg     [7:0]   A_out = 8'b0, B_out = 8'b0,
@@ -25,6 +26,7 @@ module pipeline_ID (
     output  reg     [7:0]   PC2_out = 8'b0,
 
     output  reg     [1:0]   ra_out = 2'b0,
+    output  reg     [1:0]   rb_out = 2'b0,
     output  reg     [7:0]   ea_out = 8'b0,
 
     output  reg             ex_lr_en_out = 1'b0,       //Instruction Execution Stage Out
@@ -34,20 +36,21 @@ module pipeline_ID (
 
     output  reg             mem_wr_en_out = 1'b0,      //Memory Stage Out
     output  reg             mem_imm_sel_out = 1'b0,
+    output  reg		    mem_read_out = 1'b0,
 
     output  reg             wb_wb_sel_out = 1'b0,      //Write Back Stage Out
-    output  reg             wb_data_sel_out = 1'b0,
     output  reg             wb_reg_en_out = 1'b0
 
 );
 
     always @(posedge clk) begin
-    if (rst) begin
+    if (rst || ID_stall) begin
       // Clear all registers on reset
       A_out <= 8'b0;
       B_out <= 8'b0;
       PC2_out <= 8'b0;
       ra_out <= 2'b0;
+      rb_out <= 2'b0;
       ea_out <= 8'b0;
       ex_lr_en_out <= 1'b0;
       ex_brx_out <= 1'b0;
@@ -55,8 +58,8 @@ module pipeline_ID (
       ex_br_sel_out <= 2'b0;
       mem_wr_en_out <= 1'b0;
       mem_imm_sel_out <= 1'b0;
+      mem_read_out <= 1'b0;
       wb_wb_sel_out <= 1'b0;
-      wb_data_sel_out <= 1'b0;
       wb_reg_en_out <= 1'b0;
     end else begin
       // Assign inputs to outputs on positive clock edge
@@ -64,6 +67,7 @@ module pipeline_ID (
       B_out <= B;
       PC2_out <= PC2;
       ra_out <= ra;
+      rb_out <= rb;
       ea_out <= ea;
       ex_lr_en_out <= ex_lr_en;
       ex_brx_out <= ex_brx;
@@ -71,8 +75,8 @@ module pipeline_ID (
       ex_br_sel_out <= ex_br_sel;
       mem_wr_en_out <= mem_wr_en;
       mem_imm_sel_out <= mem_imm_sel;
+      mem_read_out <= mem_read;
       wb_wb_sel_out <= wb_wb_sel;
-      wb_data_sel_out <= wb_data_sel;
       wb_reg_en_out <= wb_reg_en;
     end
   end
